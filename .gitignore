@@ -1,0 +1,11 @@
+venv/
+build/
+.env
+database.json
+gapi-credentials.json
+__pycache__/
+project_telegram_bot.egg-info/
+.vscode/
+pandasai.log
+cache/
+exports/
