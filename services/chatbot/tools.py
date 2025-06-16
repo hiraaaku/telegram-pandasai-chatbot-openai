@@ -13,19 +13,20 @@ def ask_database(question):
     result = sdf.chat(str(question))
     print(question)
     print(result)
+    print(sdf.last_code_generated)
     return result
 
 # Define the function declaration for the model
 ask_database_function = {
      "type": "function",
      "name": "ask_database",
-     "description": "if someone is asking for a question or ask to make a plot related to a data in database, use this function, its already have database access and youre allowed to access it",
+     "description": "Gunakan fungsi ini jika user bertanya tentang pertanyaan atau membuat plot yang berhubungan tentang data yang ada pada database, kamu sudah memiliki akses penuh pada database ini. Pastikan jawaban yang dihasilkan oleh pandasAI ini tidak mengandung bilangan saintifik",
      "parameters": {
          "type": "object",
          "properties": {
              "question": {
                  "type": "string",
-                 "description": "A question that pandasai can understand",
+                 "description": "Pertanyaan yang dapat dimengerti PandasAI",
              },
          },
          "required": ["question"],

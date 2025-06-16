@@ -20,6 +20,7 @@ async def route(update, context):
     memory.store_message(chatroom_id=str(update.message.chat.id), message=f"{username}: {user_message}")
     logger.message_print(update.message)
     engage_chatbot = re.search(regex.get_regex(), user_message.lower())
+    engage_chatbot = True
     if user_message.lower() == f"{config.BOT_NAME} reset":
         del memory.chat_histories[str(update.message.chat.id)]
         await context.bot.send_message(chat_id=update.message.chat.id, text="history berhasil direset")
