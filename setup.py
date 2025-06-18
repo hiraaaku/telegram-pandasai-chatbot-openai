@@ -10,6 +10,7 @@ install_requires = [
     "pandasai",
     "dotenv",
     "pytz",
+    "pymysql",
     # "SQLAlchemy>=2.0.23, <3",
     ## gen ai
     "openai>=1, <2",  # might need later, openai client
