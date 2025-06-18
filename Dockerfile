@@ -16,7 +16,7 @@ RUN pip install --no-cache-dir --upgrade pip && \
     pip install --no-cache-dir . 
 
 # Copy the required files
-COPY main.py .env data_source.csv ./
+COPY main.py .env ./
 COPY services ./services
 COPY routers ./routers
 COPY utils ./utils
