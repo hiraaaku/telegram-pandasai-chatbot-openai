@@ -1,4 +1,5 @@
 import os
+from concurrent.futures import ThreadPoolExecutor, TimeoutError
 from pandasai.llm import OpenAI
 from pandasai import SmartDatalake, SmartDataframe
 from pandasai.connectors import MySQLConnector
@@ -6,6 +7,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+timeout=int(os.environ.get('DB_TIMEOUT'))
 openai_llm = OpenAI(
     api_token=os.environ.get("OPENAI_API_KEY"),
 )
@@ -36,11 +38,16 @@ lake = SmartDatalake(
 )
 
 def ask_database(question):
-    result = lake.chat(str(question))
-    print(question)
-    print(result)
-    print(lake.last_code_generated)
-    return result
+    with ThreadPoolExecutor(max_workers=1) as executor:
+        future = executor.submit(lake.chat, str(question))
+        try:
+            result = future.result(timeout=timeout)
+            print(question)
+            print(result)
+            print(lake.last_code_generated)
+            return result
+        except TimeoutError:
+            return "⏱️ Query took too long and was stopped."
 
 # Define the function declaration for the model
 ask_database_function = {
