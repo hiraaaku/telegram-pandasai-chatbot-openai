@@ -5,9 +5,11 @@ from setuptools import find_packages, setup
 install_requires = [
     "apscheduler",
     "pyyaml",
+    "cryptography",
+    "plotly",
+    "kaleido",
     "python-telegram-bot",
     "pandas>=2, <3",
-    "pandasai",
     "dotenv",
     "pytz",
     "pymysql",
