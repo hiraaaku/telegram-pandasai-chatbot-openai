@@ -37,21 +37,38 @@ async def main(update, context):
     )
     for part in result.output:
         print(part)
-        if part.type=="function_call":
+        if part.type == "function_call":
             if part.name == "ask_database":
-                query = json.loads(part.arguments)["query"]
-                print(query)
-                result_final = sql_tool.ask_database(query)
-            # elif ".png" in str(result_final):
-                result = client.responses.create(
-                    model=config.GENAI_MODEL,
-                    input=prompt + "\n\nQuery:" + query + "\n\nHasil query" + str(result_final) + "\n\nGunakan jawaban dari PandasAI untuk menjawab permintaan user",
-                    instructions=config.SYSTEM_INSTRUCTION,
-                )
-                text=result.output[0].content[0].text
-            elif part.name == "plot_bar_line_area_chart":
+                counter = 0
+                while part.type=="function_call":
+                    counter +=1
+                    query = json.loads(part.arguments)["query"]
+                    print(query)
+                    result_temp = sql_tool.ask_database(query)
+                    if len(str(result_temp))>2000:
+                        result_temp = "hasil query terlalu banyak"
+                    if counter == 4:
+                        result_final = client.responses.create(
+                            model=config.GENAI_MODEL,
+                            input=prompt + "\n\nQuery:" + query + "\n\nHasil query" + str(result_temp) + "\n\nGunakan hasil query untuk menjawab pertanyaan user",
+                            instructions=config.SYSTEM_INSTRUCTION,
+                        )
+                        part = result_final.output[0]
+                    else:
+                        result_final = client.responses.create(
+                            model=config.GENAI_MODEL,
+                            input=prompt + "\n\nQuery:" + query + "\n\nHasil query" + str(result_temp) + "\n\nGunakan hasil query untuk menjawab pertanyaan user. Hanya gunakan tools ask_database apabila hasil query kosong atau hasil query terlalu banyak, coba gunakan strategi lain seperti menggunakan operator 'like' daripada = secara langsung.",
+                            instructions=config.SYSTEM_INSTRUCTION,
+                            tools=[sql_tool.ask_database_function],
+                        )
+                        part = result_final.output[0]
+                text = part.content[0].text
+            elif part.name == "plot_bar_line_area_chart" or part.name == "plot_pie_chart":
                 args = json.loads(part.arguments)
-                result_final = plot_tool.plot_bar_line_area_chart(args)
+                if part.name == "plot_bar_line_area_chart":
+                    result_final = plot_tool.plot_bar_line_area_chart(args)
+                else:
+                    result_final = plot_tool.plot_pie_chart(args)
                 if result_final == "success":
                     file_loc = "temp_chart.jpg"
                     await context.bot.send_photo(

@@ -1,4 +1,3 @@
-import os
 from dotenv import load_dotenv
 from utils.sql_connector import get_mysql_connection
 from utils.table_description import table_description
@@ -15,6 +14,8 @@ def ask_database(query):
                 result = cursor.fetchall()
             conn.close()
             print(result)
+            if len(result)<1:
+                return "query return empty list"
             return result
         except Exception as e:
             return str(e)
